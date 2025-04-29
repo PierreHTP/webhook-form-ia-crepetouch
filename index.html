@@ -1,1 +1,46 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Formulaire Webhook</title>
+</head>
+<body>
+  <h2>Formulaire</h2>
+  <form id="webhookForm">
+    <label>Nom :
+      <input type="text" name="nom" required>
+    </label><br><br>
+    <label>Email :
+      <input type="email" name="email" required>
+    </label><br><br>
+    <label>Message :
+      <textarea name="message" required></textarea>
+    </label><br><br>
+    <button type="submit">Envoyer</button>
+  </form>
+
+  <script>
+    document.getElementById("webhookForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const data = new FormData(e.target);
+      const json = Object.fromEntries(data.entries());
+
+      fetch("https://hook.eu2.make.com/qvtrgew4s68yf9ablk655aevxlyay2qj", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(json)
+      })
+      .then(response => {
+        if (response.ok) {
+          alert("Données envoyées !");
+        } else {
+          alert("Erreur à l'envoi.");
+        }
+      });
+    });
+  </script>
+</body>
+</html>
 
