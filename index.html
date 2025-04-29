@@ -37,6 +37,8 @@
       padding: 10px;
       margin-bottom: 20px;
       background: #f1f1f1;
+      display: flex;
+      flex-direction: column;
     }
 
     .message {
@@ -55,6 +57,12 @@
     .bot-message {
       background: #e0f2f1;
       text-align: left;
+      align-self: flex-start;
+    }
+
+    .typing {
+      font-style: italic;
+      color: #888;
     }
 
     form {
@@ -108,6 +116,7 @@
       msg.innerText = text;
       chatBox.appendChild(msg);
       chatBox.scrollTop = chatBox.scrollHeight;
+      return msg;
     }
 
     form.addEventListener("submit", function(e) {
@@ -118,6 +127,18 @@
       addMessage(message, "user");
       input.value = "";
 
+      // Ajouter un message de chargement animé
+      const loadingMsg = document.createElement("div");
+      loadingMsg.className = "message bot-message typing";
+      chatBox.appendChild(loadingMsg);
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      let dots = "";
+      let interval = setInterval(() => {
+        dots = dots.length >= 3 ? "" : dots + ".";
+        loadingMsg.innerText = "Je m'en occupe" + dots;
+      }, 500);
+
       // Appel du webhook Make.com
       fetch("https://hook.eu2.make.com/qvtrgew4s68yf9ablk655aevxlyay2qj", {
         method: "POST",
@@ -126,9 +147,13 @@
       })
       .then(res => res.json())
       .then(data => {
+        clearInterval(interval);
+        chatBox.removeChild(loadingMsg);
         addMessage(data.reply || "Merci pour votre message, nous reviendrons vers vous !", "bot");
       })
       .catch(err => {
+        clearInterval(interval);
+        chatBox.removeChild(loadingMsg);
         console.error(err);
         addMessage("Une erreur est survenue. Veuillez réessayer plus tard.", "bot");
       });
