@@ -106,64 +106,65 @@
   </div>
 
   <script>
-    const chatBox = document.getElementById("chatBox");
-    const form = document.getElementById("chatForm");
-    const input = document.getElementById("userInput");
-    const conversationHistory = [];
+  const chatBox = document.getElementById("chatBox");
+  const form = document.getElementById("chatForm");
+  const input = document.getElementById("userInput");
+  const conversationHistory = [];
 
-    function addMessage(text, type) {
-      const msg = document.createElement("div");
-      msg.className = "message " + (type === "user" ? "user-message" : "bot-message");
-      msg.innerText = text;
-      chatBox.appendChild(msg);
-      chatBox.scrollTop = chatBox.scrollHeight;
-      return msg;
-    }
+  function addMessage(text, type) {
+    const msg = document.createElement("div");
+    msg.className = "message " + (type === "user" ? "user-message" : "bot-message");
+    msg.innerText = text;
+    chatBox.appendChild(msg);
+    chatBox.scrollTop = chatBox.scrollHeight;
+    return msg;
+  }
 
-    form.addEventListener("submit", function(e) {
-      e.preventDefault();
-      const message = input.value.trim();
-      if (!message) return;
+  form.addEventListener("submit", function(e) {
+    e.preventDefault();
+    const message = input.value.trim();
+    if (!message) return;
 
-      addMessage(message, "user");
-      input.value = "";
+    addMessage(message, "user");
+    input.value = "";
 
-      conversationHistory.push({ role: "user", content: message });
+    // Remplacer "user" par "Mickaël" ici
+    conversationHistory.push({ role: "Mickaël", content: message });
 
-      const loadingMsg = document.createElement("div");
-      loadingMsg.className = "message bot-message typing";
-      chatBox.appendChild(loadingMsg);
-      chatBox.scrollTop = chatBox.scrollHeight;
+    const loadingMsg = document.createElement("div");
+    loadingMsg.className = "message bot-message typing";
+    chatBox.appendChild(loadingMsg);
+    chatBox.scrollTop = chatBox.scrollHeight;
 
-      let dots = "";
-      const interval = setInterval(() => {
-        dots = dots.length >= 3 ? "" : dots + ".";
-        loadingMsg.innerText = "Je regarde" + dots;
-      }, 500);
+    let dots = "";
+    const interval = setInterval(() => {
+      dots = dots.length >= 3 ? "" : dots + ".";
+      loadingMsg.innerText = "Je regarde" + dots;
+    }, 500);
 
-      fetch("https://hook.eu2.make.com/qvtrgew4s68yf9ablk655aevxlyay2qj", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ conversation: conversationHistory })
-      })
-      .then(res => res.json())
-      .then(data => {
-        clearInterval(interval);
-        chatBox.removeChild(loadingMsg);
+    fetch("https://hook.eu2.make.com/qvtrgew4s68yf9ablk655aevxlyay2qj", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ conversation: conversationHistory })
+    })
+    .then(res => res.json())
+    .then(data => {
+      clearInterval(interval);
+      chatBox.removeChild(loadingMsg);
 
-        const botReply = data.reply || "Merci pour votre message.";
-        conversationHistory.push({ role: "assistant", content: botReply });
+      const botReply = data.reply || "Merci pour votre message.";
+      conversationHistory.push({ role: "assistant", content: botReply });
 
-        addMessage(botReply, "bot");
-      })
-      .catch(err => {
-        clearInterval(interval);
-        chatBox.removeChild(loadingMsg);
-        console.error(err);
-        addMessage("Une erreur est survenue. Veuillez réessayer plus tard.", "bot");
-      });
+      addMessage(botReply, "bot");
+    })
+    .catch(err => {
+      clearInterval(interval);
+      chatBox.removeChild(loadingMsg);
+      console.error(err);
+      addMessage("Une erreur est survenue. Veuillez réessayer plus tard.", "bot");
     });
-  </script>
+  });
+</script>
 
 </body>
 </html>
